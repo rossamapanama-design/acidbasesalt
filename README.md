@@ -1,4 +1,3 @@
-<!doctype html>
 <html lang="th">
  <head>
   <meta charset="UTF-8">
@@ -363,6 +362,7 @@
       position: relative;
     }
 
+    /* แมว */
     .animal-head.cat {
       width: 70px;
       height: 60px;
@@ -393,6 +393,7 @@
       transform: rotate(20deg);
     }
 
+    /* สุนัข */
     .animal-head.dog {
       width: 65px;
       height: 65px;
@@ -422,6 +423,7 @@
       transform: rotate(30deg);
     }
 
+    /* กระต่าย */
     .animal-head.rabbit {
       width: 65px;
       height: 60px;
@@ -451,6 +453,7 @@
       transform: rotate(10deg);
     }
 
+    /* หมี */
     .animal-head.bear {
       width: 70px;
       height: 68px;
@@ -730,8 +733,8 @@
      <h1 class="game-title" id="gameTitle">สนุกกับกรด-เบส</h1>
      <p class="subtitle" id="subtitle">กรด เบส และเกลือ</p>
     </div>
-    <div id="playerSetupSection" class="player-input-section">
-     <h3>👤 กรอกชื่อผู้เล่น</h3><input type="text" id="playerNameInput" class="player-input" placeholder="ชื่อของคุณ" style="margin-bottom: 25px; width: 100%; max-width: 400px;">
+    <div id="playerInputSection" class="player-input-section">
+     <h3>กรุณากรอกชื่อผู้เล่น</h3><input type="text" id="playerNameInput" class="player-input" placeholder="ชื่อของคุณ">
      <div style="margin-top: 30px;">
       <h3 style="margin-bottom: 20px;">🐾 เลือกสัตว์ของคุณ</h3>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 600px; margin: 0 auto;">
@@ -771,7 +774,7 @@
         </div>
        </div>
       </div>
-     </div><button class="btn btn-primary" onclick="startGame()" style="margin-top: 30px; font-size: 18px; padding: 18px 40px;">🎮 เริ่มเกม</button>
+     </div><button class="btn btn-primary" onclick="startGame()" style="margin-top: 30px;">เริ่มเกม</button>
     </div>
     <div id="gameContent" class="hidden">
      <div class="mode-selection">
@@ -878,6 +881,7 @@
     };
 
     const questions = [
+      // โหมด 1: กำหนดเกลือ หากรดและเบส (10 ข้อ)
       { mode: 1, salt: 'NaCl', saltName: 'โซเดียมคลอไรด์', acid: 'HCl', base: 'NaOH', decoys: ['H₂SO₄', 'KOH', 'Ca(OH)₂', 'HNO₃', 'NH₃', 'CH₃COOH'] },
       { mode: 1, salt: 'KNO₃', saltName: 'โพแทสเซียมไนเตรต', acid: 'HNO₃', base: 'KOH', decoys: ['HCl', 'NaOH', 'H₂SO₄', 'Ca(OH)₂', 'NH₃', 'H₃PO₄'] },
       { mode: 1, salt: 'CaSO₄', saltName: 'แคลเซียมซัลเฟต', acid: 'H₂SO₄', base: 'Ca(OH)₂', decoys: ['HCl', 'NaOH', 'HNO₃', 'KOH', 'Mg(OH)₂', 'HBr'] },
@@ -885,10 +889,11 @@
       { mode: 1, salt: 'K₂SO₄', saltName: 'โพแทสเซียมซัลเฟต', acid: 'H₂SO₄', base: 'KOH', decoys: ['HCl', 'NaOH', 'HNO₃', 'Ca(OH)₂', 'NH₃', 'CH₃COOH'] },
       { mode: 1, salt: 'NH₄Cl', saltName: 'แอมโมเนียมคลอไรด์', acid: 'HCl', base: 'NH₃', decoys: ['H₂SO₄', 'NaOH', 'HNO₃', 'KOH', 'Ca(OH)₂', 'CH₃COOH'] },
       { mode: 1, salt: 'CH₃COONa', saltName: 'โซเดียมอะซิเตต', acid: 'CH₃COOH', base: 'NaOH', decoys: ['HCl', 'KOH', 'H₂SO₄', 'Ca(OH)₂', 'HNO₃', 'NH₃'] },
-      { mode: 1, salt: 'Na₂SO₄', saltName: 'โซเดียมซัลเฟต', acid: 'H₂SO₄', base: 'NaOH', decoys: ['HCl', 'KOH', 'HNO₃', 'Ca(OH)₂', 'NH₃', 'Mg(OH)₂'] },
+      { mode: 1, salt: 'Na₂SO₄', saltName: 'โ���เดียมซัลเฟต', acid: 'H₂SO₄', base: 'NaOH', decoys: ['HCl', 'KOH', 'HNO₃', 'Ca(OH)₂', 'NH₃', 'Mg(OH)₂'] },
       { mode: 1, salt: 'Ca(NO₃)₂', saltName: 'แคลเซียมไนเตรต', acid: 'HNO₃', base: 'Ca(OH)₂', decoys: ['HCl', 'NaOH', 'H₂SO₄', 'KOH', 'NH₃', 'CH₃COOH'] },
       { mode: 1, salt: 'MgSO₄', saltName: 'แมกนีเซียมซัลเฟต', acid: 'H₂SO₄', base: 'Mg(OH)₂', decoys: ['HCl', 'NaOH', 'HNO₃', 'KOH', 'Ca(OH)₂', 'NH₃'] },
 
+      // โหมด 2: กำหนดกรดและเบส ทายเกลือ (10 ข้อ)
       { mode: 2, acid: 'HCl', base: 'NaOH', salt: 'NaCl', decoys: ['KCl', 'Na₂SO₄', 'NaBr', 'NaNO₃', 'K₂SO₄', 'MgCl₂'] },
       { mode: 2, acid: 'H₂SO₄', base: 'KOH', salt: 'K₂SO₄', decoys: ['KCl', 'Na₂SO₄', 'KNO₃', 'K₃PO₄', 'MgSO₄', 'CaSO₄'] },
       { mode: 2, acid: 'HNO₃', base: 'Ca(OH)₂', salt: 'Ca(NO₃)₂', decoys: ['CaCl₂', 'CaSO₄', 'Mg(NO₃)₂', 'KNO₃', 'NaNO₃', 'CaCO₃'] },
@@ -974,7 +979,7 @@
 
     const dataHandler = {
       onDataChanged(data) {
-        allScores = data;
+        allScores = data.sort((a, b) => b.score - a.score).slice(0, 10);
         renderLeaderboard();
       }
     };
@@ -1010,7 +1015,7 @@
       }
     }
 
-    async function startGame() {
+    function startGame() {
       const nameInput = document.getElementById('playerNameInput');
       playerName = nameInput.value.trim();
 
@@ -1019,7 +1024,7 @@
         return;
       }
 
-      document.getElementById('playerSetupSection').classList.add('hidden');
+      document.getElementById('playerInputSection').classList.add('hidden');
       document.getElementById('gameContent').classList.remove('hidden');
       
       const characterElement = document.getElementById('playerCharacter');
@@ -1337,7 +1342,7 @@
       if (isCorrect) {
         score += 10;
         resultDiv.className = 'result-message correct';
-        resultDiv.textContent = '✅ ถูกต้อง! +10 คะแนน';
+        resultDiv.textContent = '✅ ถูก��้อง! +10 คะแนน';
         acidZone.classList.add('correct');
         baseZone.classList.add('correct');
       } else {
@@ -1445,20 +1450,19 @@
       const sameModeScores = allScores.filter(s => s.mode === modeText);
       
       if (sameModeScores.length === 0) {
-        return '<p style="font-size: 16px; color: #666; margin-bottom: 20px;">คุณเป็นคนแรกที่เล่นโหมดนี้!</p>';
+        return '<p style="font-size: 16px; color: #666; margin-bottom: 20px;">คุณเป็นคนแรกที่เล่นโหมดนี���!</p>';
       }
 
-      const sortedScores = [...sameModeScores].sort((a, b) => b.score - a.score);
-      const playerRank = sortedScores.findIndex(s => 
+      const playerRank = sameModeScores.findIndex(s => 
         s.player_name === playerName && 
         Math.abs(s.score - score) < 0.01 &&
         s.mode === modeText
       ) + 1;
       
-      const totalPlayers = sortedScores.length;
+      const totalPlayers = sameModeScores.length;
       
-      const topScore = sortedScores[0].score;
-      const averageScore = Math.round(sortedScores.reduce((sum, s) => sum + s.score, 0) / totalPlayers);
+      const topScore = sameModeScores[0].score;
+      const averageScore = Math.round(sameModeScores.reduce((sum, s) => sum + s.score, 0) / totalPlayers);
       
       let rankEmoji = '🏅';
       let rankColor = '#667eea';
@@ -1534,14 +1538,12 @@
     function renderLeaderboard() {
       const list = document.getElementById('leaderboardList');
       
-      const topScores = allScores.sort((a, b) => b.score - a.score).slice(0, 10);
-      
-      if (topScores.length === 0) {
+      if (allScores.length === 0) {
         list.innerHTML = '<li class="loading">ยังไม่มีคะแนน</li>';
         return;
       }
 
-      list.innerHTML = topScores.map((record, index) => `
+      list.innerHTML = allScores.map((record, index) => `
         <li class="leaderboard-item">
           <span class="leaderboard-rank">${index + 1}</span>
           <span class="leaderboard-name">${record.player_name}</span>
@@ -1559,40 +1561,19 @@
 
     function showInlineMessage(message, type) {
       const messageDiv = document.createElement('div');
-      let bgColor = '#d4edda';
-      let textColor = '#155724';
-      let borderColor = '#c3e6cb';
-      
-      if (type === 'error') {
-        bgColor = '#f8d7da';
-        textColor = '#721c24';
-        borderColor = '#f5c6cb';
-      } else if (type === 'info') {
-        bgColor = '#d1ecf1';
-        textColor = '#0c5460';
-        borderColor = '#bee5eb';
-      } else if (type === 'success') {
-        bgColor = '#d4edda';
-        textColor = '#155724';
-        borderColor = '#c3e6cb';
-      }
-      
       messageDiv.style.cssText = `
         position: fixed;
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
         padding: 15px 30px;
-        background: ${bgColor};
-        color: ${textColor};
-        border: 2px solid ${borderColor};
+        background: ${type === 'error' ? '#f8d7da' : '#d4edda'};
+        color: ${type === 'error' ? '#721c24' : '#155724'};
+        border: 2px solid ${type === 'error' ? '#f5c6cb' : '#c3e6cb'};
         border-radius: 10px;
         font-weight: bold;
         z-index: 1000;
         animation: slideIn 0.5s ease;
-        max-width: 90%;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       `;
       messageDiv.textContent = message;
       document.body.appendChild(messageDiv);
@@ -1604,5 +1585,5 @@
 
     initSDKs();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a53ba09d2a0898c',t:'MTc2NDI2ODU0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a7c513823039e41',t:'MTc2NDY5NDE2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
