@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="th">
  <head>
   <meta charset="UTF-8">
@@ -889,7 +890,7 @@
       { mode: 1, salt: 'K₂SO₄', saltName: 'โพแทสเซียมซัลเฟต', acid: 'H₂SO₄', base: 'KOH', decoys: ['HCl', 'NaOH', 'HNO₃', 'Ca(OH)₂', 'NH₃', 'CH₃COOH'] },
       { mode: 1, salt: 'NH₄Cl', saltName: 'แอมโมเนียมคลอไรด์', acid: 'HCl', base: 'NH₃', decoys: ['H₂SO₄', 'NaOH', 'HNO₃', 'KOH', 'Ca(OH)₂', 'CH₃COOH'] },
       { mode: 1, salt: 'CH₃COONa', saltName: 'โซเดียมอะซิเตต', acid: 'CH₃COOH', base: 'NaOH', decoys: ['HCl', 'KOH', 'H₂SO₄', 'Ca(OH)₂', 'HNO₃', 'NH₃'] },
-      { mode: 1, salt: 'Na₂SO₄', saltName: 'โ���เดียมซัลเฟต', acid: 'H₂SO₄', base: 'NaOH', decoys: ['HCl', 'KOH', 'HNO₃', 'Ca(OH)₂', 'NH₃', 'Mg(OH)₂'] },
+      { mode: 1, salt: 'Na₂SO₄', saltName: 'โซเดียมซัลเฟต', acid: 'H₂SO₄', base: 'NaOH', decoys: ['HCl', 'KOH', 'HNO₃', 'Ca(OH)₂', 'NH₃', 'Mg(OH)₂'] },
       { mode: 1, salt: 'Ca(NO₃)₂', saltName: 'แคลเซียมไนเตรต', acid: 'HNO₃', base: 'Ca(OH)₂', decoys: ['HCl', 'NaOH', 'H₂SO₄', 'KOH', 'NH₃', 'CH₃COOH'] },
       { mode: 1, salt: 'MgSO₄', saltName: 'แมกนีเซียมซัลเฟต', acid: 'H₂SO₄', base: 'Mg(OH)₂', decoys: ['HCl', 'NaOH', 'HNO₃', 'KOH', 'Ca(OH)₂', 'NH₃'] },
 
@@ -921,6 +922,7 @@
     function selectAnimalColor(color) {
       selectedAnimalColor = color;
       
+      // อัพเดทปุ่มที่เลือก
       document.querySelectorAll('.color-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-color') === color) {
@@ -928,17 +930,20 @@
         }
       });
       
+      // อัพเดทตัวอย่าง
       updatePreviewAnimal();
     }
 
     function selectAnimalType(type) {
       selectedAnimalType = type;
       
+      // อัพเดทปุ่มที่เลือก
       document.querySelectorAll('.hair-btn').forEach(btn => {
         btn.classList.remove('active');
       });
       event.target.classList.add('active');
       
+      // อัพเดทตัวอย่าง
       updatePreviewAnimal();
     }
 
@@ -955,11 +960,13 @@
       ];
       const tail = document.getElementById('previewTail');
 
+      // เปลี่ยนสี
       head.style.background = selectedAnimalColor;
       body.style.background = selectedAnimalColor;
       legs.forEach(leg => leg.style.background = selectedAnimalColor);
       tail.style.background = selectedAnimalColor;
 
+      // เปลี่ยนรูปแบบหู
       head.className = 'animal-head ' + selectedAnimalType;
       earLeft.className = 'animal-ear ' + selectedAnimalType + ' left';
       earRight.className = 'animal-ear ' + selectedAnimalType + ' right';
@@ -1027,10 +1034,12 @@
       document.getElementById('playerInputSection').classList.add('hidden');
       document.getElementById('gameContent').classList.remove('hidden');
       
+      // แสดงสัตว์พร้อมชื่อผู้เล่นและการปรับแต่ง
       const characterElement = document.getElementById('playerCharacter');
       characterElement.classList.remove('hidden');
       document.getElementById('characterName').textContent = playerName;
       
+      // อัพเดทสัตว์ในเกม
       updateCharacterAnimal();
     }
 
@@ -1047,11 +1056,13 @@
       ];
       const tail = document.getElementById('characterTail');
 
+      // เปลี่ยนสี
       head.style.background = selectedAnimalColor;
       body.style.background = selectedAnimalColor;
       legs.forEach(leg => leg.style.background = selectedAnimalColor);
       tail.style.background = selectedAnimalColor;
 
+      // เปลี่ยนรูปแบบหู
       head.className = 'animal-head ' + selectedAnimalType;
       earLeft.className = 'animal-ear ' + selectedAnimalType + ' left';
       earRight.className = 'animal-ear ' + selectedAnimalType + ' right';
@@ -1083,6 +1094,7 @@
         document.getElementById('mode2Card').classList.add('active');
       }
 
+      // ล็อคการเลือกโหมดเมื่อเริ่มเล่นแล้ว
       document.getElementById('mode1Card').style.pointerEvents = 'none';
       document.getElementById('mode2Card').style.pointerEvents = 'none';
       document.getElementById('mode1Card').style.opacity = '0.6';
@@ -1137,6 +1149,7 @@
       document.getElementById('acidDropZone').classList.remove('filled', 'correct', 'incorrect');
       document.getElementById('baseDropZone').classList.remove('filled', 'correct', 'incorrect');
       
+      // เพิ่มฟังก์ชันคลิกเพื่อลบคำตอบในช่อง
       document.getElementById('acidDropZone').addEventListener('click', () => {
         if (selectedAcid && !selectedBase && !isAnswering) {
           removeAnswerFromZone('acid');
@@ -1227,6 +1240,7 @@
         document.getElementById('acidDropped').innerHTML = '';
         document.getElementById('acidDropZone').classList.remove('filled');
         
+        // คืนสถานะตัวเลือก
         choiceElements.forEach(el => {
           if (el.textContent === answerToRemove) {
             el.classList.remove('used');
@@ -1238,6 +1252,7 @@
         document.getElementById('baseDropped').innerHTML = '';
         document.getElementById('baseDropZone').classList.remove('filled');
         
+        // คืนสถานะตัวเลือก
         choiceElements.forEach(el => {
           if (el.textContent === answerToRemove) {
             el.classList.remove('used');
@@ -1258,11 +1273,13 @@
         document.getElementById('baseDropped').innerHTML = `<span class="dropped-item">${choice}</span>`;
         document.getElementById('baseDropZone').classList.add('filled');
         
+        // ตรวจคำตอบทันทีเมื่อเลือกครบทั้งกรดและเบส
         checkAnswerMode1();
       }
     }
 
     function handleDrop(choice, zoneId) {
+      // หากเติมครบ 2 ช่องแล้ว ไม่สามารถเปลี่ยนได้
       if (selectedAcid && selectedBase) {
         return;
       }
@@ -1284,6 +1301,7 @@
         document.getElementById('acidDropped').innerHTML = `<span class="dropped-item">${choice}</span>`;
         document.getElementById('acidDropZone').classList.add('filled');
         
+        // ตรวจคำตอบถ้าเลือกครบทั้งสองช่องแล้ว
         if (selectedBase) {
           checkAnswerMode1();
         }
@@ -1293,6 +1311,7 @@
         document.getElementById('baseDropped').innerHTML = `<span class="dropped-item">${choice}</span>`;
         document.getElementById('baseDropZone').classList.add('filled');
         
+        // ตรวจคำตอบถ้าเลือกครบทั้งสองช่องแล้ว
         if (selectedAcid) {
           checkAnswerMode1();
         }
@@ -1316,6 +1335,7 @@
         saltDiv.addEventListener('click', () => {
           if (!isAnswering) {
             selectedSalt = salt;
+            // ตรวจคำตอบทันทีเมื่อคลิก
             checkAnswerMode2();
           }
         });
@@ -1335,6 +1355,7 @@
       const acidZone = document.getElementById('acidDropZone');
       const baseZone = document.getElementById('baseDropZone');
       
+      // ปิดการใช้งานตัวเลือกทั้งหมด
       document.querySelectorAll('.choice-item').forEach(el => {
         el.classList.add('disabled');
       });
@@ -1342,7 +1363,7 @@
       if (isCorrect) {
         score += 10;
         resultDiv.className = 'result-message correct';
-        resultDiv.textContent = '✅ ถูก��้อง! +10 คะแนน';
+        resultDiv.textContent = '✅ ถูกต้อง! +10 คะแนน';
         acidZone.classList.add('correct');
         baseZone.classList.add('correct');
       } else {
@@ -1354,6 +1375,7 @@
 
       document.getElementById('scoreDisplay').textContent = `คะแนน: ${score}`;
 
+      // ไปข้อถัดไปอัตโนมัติหลัง 2 วินาที
       setTimeout(() => {
         currentQuestion++;
         loadQuestion();
@@ -1369,10 +1391,12 @@
 
       const resultDiv = document.getElementById('resultMessage');
       
+      // ปิดการใช้งานตัวเลือกทั้งหมด
       document.querySelectorAll('.choice-item').forEach(el => {
         el.classList.add('disabled');
       });
 
+      // ไฮไลท์คำตอบที่เลือก
       document.querySelectorAll('#saltChoicesGrid .choice-item').forEach(el => {
         if (el.textContent === selectedSalt) {
           if (isCorrect) {
@@ -1400,6 +1424,7 @@
 
       document.getElementById('scoreDisplay').textContent = `คะแนน: ${score}`;
 
+      // ไปข้อถัดไปอัตโนมัติหลัง 2 วินาที
       setTimeout(() => {
         currentQuestion++;
         loadQuestion();
@@ -1412,12 +1437,6 @@
       if (allScores.length >= 999) {
         showInlineMessage('ไม่สามารถบันทึกคะแนนได้ เนื่องจากข้อมูลเต็มแล้ว (999 รายการ)', 'error');
       } else {
-        document.getElementById('gameArea').innerHTML = `
-          <div style="text-align: center; padding: 40px;">
-            <div class="loading">กำลังบันทึกคะแนน...</div>
-          </div>
-        `;
-
         const result = await window.dataSdk.create({
           id: Date.now().toString(),
           player_name: playerName,
@@ -1429,10 +1448,9 @@
         if (!result.isOk) {
           showInlineMessage('เกิดข้อผิดพลาดในการบันทึกคะแนน', 'error');
         }
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
+      // คำนวณสรุปผลการแข่งขัน
       const competitionSummary = generateCompetitionSummary();
 
       document.getElementById('gameArea').innerHTML = `
@@ -1446,21 +1464,19 @@
     }
 
     function generateCompetitionSummary() {
+      // กรองคะแนนของโหมดเดียวกัน
       const modeText = currentMode === 1 ? 'โหมด 1' : 'โหมด 2';
       const sameModeScores = allScores.filter(s => s.mode === modeText);
       
-      if (sameModeScores.length === 0) {
-        return '<p style="font-size: 16px; color: #666; margin-bottom: 20px;">คุณเป็นคนแรกที่เล่นโหมดนี���!</p>';
+      if (sameModeScores.length <= 1) {
+        return '<p style="font-size: 16px; color: #666; margin-bottom: 20px;">ยังไม่มีผู้เล่นคนอื่นในโหมดนี้</p>';
       }
 
-      const playerRank = sameModeScores.findIndex(s => 
-        s.player_name === playerName && 
-        Math.abs(s.score - score) < 0.01 &&
-        s.mode === modeText
-      ) + 1;
-      
+      // หาอันดับของผู้เล่น
+      const playerRank = sameModeScores.findIndex(s => s.player_name === playerName && s.score === score) + 1;
       const totalPlayers = sameModeScores.length;
       
+      // คำนวณสถิติ
       const topScore = sameModeScores[0].score;
       const averageScore = Math.round(sameModeScores.reduce((sum, s) => sum + s.score, 0) / totalPlayers);
       
@@ -1484,16 +1500,13 @@
         rankEmoji = '⭐';
         rankColor = '#667eea';
         rankMessage = `เก่งมาก! คุณอยู่ใน Top 5 (อันดับ ${playerRank})`;
-      } else if (playerRank > 0) {
-        rankEmoji = '🏅';
-        rankColor = '#666';
-        rankMessage = `คุณอยู่อันดับที่ ${playerRank} จาก ${totalPlayers} คน`;
       } else {
         rankEmoji = '🏅';
         rankColor = '#666';
-        rankMessage = `มีผู้เล่น ${totalPlayers} คนในโหมดนี้`;
+        rankMessage = `คุณอยู่อันดับที่ ${playerRank} จาก ${totalPlayers} คน`;
       }
 
+      // เปรียบเทียบกับคะแนนเฉลี่ย
       let comparisonText = '';
       if (score > averageScore) {
         const diff = score - averageScore;
@@ -1585,5 +1598,5 @@
 
     initSDKs();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a7c513823039e41',t:'MTc2NDY5NDE2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a7c5a9de668a8fa',t:'MTc2NDY5NDU0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
