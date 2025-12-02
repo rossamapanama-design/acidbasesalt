@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="th">
  <head>
   <meta charset="UTF-8">
@@ -1443,274 +1444,165 @@
       const modeText = currentMode === 1 ? 'โหมด 1' : 'โหมด 2';
       const sameModeScores = allScores.filter(s => s.mode === modeText);
       
+      if (sameModeScores.length === 0) {
+        return '<p style="font-size: 16px; color: #666; margin-bottom: 20px;">คุณเป็นคนแรกที่เล่นโหมดนี้!</p>';
+      }
 
+      const sortedScores = [...sameModeScores].sort((a, b) => b.score - a.score);
+      const playerRank = sortedScores.findIndex(s => 
+        s.player_name === playerName && 
+        Math.abs(s.score - score) < 0.01 &&
+        s.mode === modeText
+      ) + 1;
+      
+      const totalPlayers = sortedScores.length;
+      
+      const topScore = sortedScores[0].score;
+      const averageScore = Math.round(sortedScores.reduce((sum, s) => sum + s.score, 0) / totalPlayers);
+      
+      let rankEmoji = '🏅';
+      let rankColor = '#667eea';
+      let rankMessage = '';
+      
+      if (playerRank === 1) {
+        rankEmoji = '🥇';
+        rankColor = '#FFD700';
+        rankMessage = 'ยอดเยี่ยม! คุณได้อันดับ 1';
+      } else if (playerRank === 2) {
+        rankEmoji = '🥈';
+        rankColor = '#C0C0C0';
+        rankMessage = 'เยี่ยมมาก! คุณได้อันดับ 2';
+      } else if (playerRank === 3) {
+        rankEmoji = '🥉';
+        rankColor = '#CD7F32';
+        rankMessage = 'ดีมาก! คุณได้อันดับ 3';
+      } else if (playerRank <= 5) {
+        rankEmoji = '⭐';
+        rankColor = '#667eea';
+        rankMessage = `เก่งมาก! คุณอยู่ใน Top 5 (อันดับ ${playerRank})`;
+      } else if (playerRank > 0) {
+        rankEmoji = '🏅';
+        rankColor = '#666';
+        rankMessage = `คุณอยู่อันดับที่ ${playerRank} จาก ${totalPlayers} คน`;
+      } else {
+        rankEmoji = '🏅';
+        rankColor = '#666';
+        rankMessage = `มีผู้เล่น ${totalPlayers} คนในโหมดนี้`;
+      }
 
-/* ===== App State and Utility Functions ===== */
+      let comparisonText = '';
+      if (score > averageScore) {
+        const diff = score - averageScore;
+        comparisonText = `<p style="color: #28a745; font-size: 16px; margin: 10px 0;">📈 สูงกว่าค่าเฉลี่ย ${diff} คะแนน!</p>`;
+      } else if (score < averageScore) {
+        const diff = averageScore - score;
+        comparisonText = `<p style="color: #ff9800; font-size: 16px; margin: 10px 0;">📊 ต่ำกว่าค่าเฉลี่ย ${diff} คะแนน</p>`;
+      } else {
+        comparisonText = `<p style="color: #667eea; font-size: 16px; margin: 10px 0;">📊 ตรงกับค่าเฉลี่ยพอดี!</p>`;
+      }
 
-// Shuffles an array in-place (Fisher–Yates algorithm)
-function shuffle(array) {
-  let m = array.length, t, i;
-  while (m > 0) {
-    i = Math.floor(Math.random() * m--);
-    t = array[m];
-    array[m] = array[i];
-    array[i] = t;
-  }
-  return array;
-}
-
-// Pick array of distinct random items
-function pickRandom(array, n) {
-  if (n >= array.length) return Array.from(array);
-  let arrCopy = Array.from(array);
-  return shuffle(arrCopy).slice(0, n);
-}
-
-// For displaying Thai + formula together
-function nameAndFormula(nameTh, formula) {
-  return `${nameTh} <span style="color:#4963b9">(${formula})</span>`;
-}
-
-/* ========== Main Game App ========== */
-
-const appDom = document.getElementById('app');
-
-const MODES = [
-  {
-    key: 'whoami',
-    name: 'ฉันคือใคร',
-    desc: 'ดูชื่อกรดและเบส แล้วตอบว่าได้เกลือชนิดไหนจากปฏิกิริยานี้',
-    btn: 'โหมด “ฉันคือใคร”'
-  },
-  {
-    key: 'whomade',
-    name: 'ฉันเกิดจากใคร',
-    desc: 'ดูชื่อเกลือ แล้วตอบว่ามันเกิดจากกรดและเบสชนิดใด',
-    btn: 'โหมด “ฉันเกิดจากใคร”'
-  }
-];
-
-// ========== Rendering Screens ==========
-
-// Entry screen
-function renderStartScreen() {
-  appDom.innerHTML = `
-    <h1>เกมฉันเกิดมาจากใคร:<br>ปฏิกิริยาระหว่างกรดและเบส</h1>
-    <div class="subtitle">
-      เลือกโหมดเกมเพื่อเริ่มต้น:<br>
-      <span style="color:#193a86;font-size:0.97em">เล่นเพื่อเรียนรู้เรื่อง “เกลือ” จากการเกิดปฏิกิริยา กรด + เบส</span>
-    </div>
-    <button class="mode-btn" onclick="startGame('whoami')">${MODES[0].btn}</button>
-    <button class="mode-btn" onclick="startGame('whomade')">${MODES[1].btn}</button>
-  `;
-}
-
-// Game round state
-let state = {
-  mode: null,
-  questions: [],
-  currentQIdx: 0,
-  answers: []
-};
-
-// Start game with mode
-window.startGame = function(modeKey) {
-  // Setup state
-  const questions = pickRandom(acidBasePairs, 10);
-  state = {
-    mode: modeKey,
-    questions,
-    currentQIdx: 0,
-    answers: []
-  };
-  renderQuestion();
-};
-
-// Return to home/reset
-window.goHome = function() {
-  renderStartScreen();
-};
-
-// ========== Question Rendering ==========
-
-// Render one question for current state
-function renderQuestion() {
-  const qNum = state.currentQIdx + 1;
-  const q = state.questions[state.currentQIdx];
-  let questionHtml = `
-    <div class="question-number">ข้อที่ ${qNum} / 10</div>
-    <h2>
-      ${state.mode === 'whoami' ? 'ฉันคือใคร?' : 'ฉันเกิดจากใคร?'}
-    </h2>
-    <div class="subtitle">${state.mode === 'whoami'
-      ? "กรด + เบส = เกลือชนิดใด?"
-      : "เกลือนี้ เกิดจากกรดและเบสชนิดใด?"
-    }</div>
-    <div class="question-area">
-  `;
-
-  // Who Am I mode: show acid & base
-  if (state.mode === 'whoami') {
-    questionHtml += `
-      <div class="equation-box" style="margin-bottom:10px;">
-        <span>
-          ${nameAndFormula(q.acidNameTh, q.acidFormula)}
-          &nbsp;+&nbsp;
-          ${nameAndFormula(q.baseNameTh, q.baseFormula)}
-        </span><br>
-        <span style="color:#2d3285;font-size:0.95em;">
-          ${q.equation}
-        </span>
-      </div>
-      <div><strong>เลือกชื่อเกลือที่เกิดขึ้นต่อไปนี้</strong></div>
-      <div class="options-list" id="options-container">
-    `;
-    // Build options: correct salt + 3 random salts
-    let saltOptions = [q.saltNameTh + ' (' + q.saltFormula + ')'];
-    // Avoid duplicate and self
-    let otherSalts = acidBasePairs.filter(ab => ab.id !== q.id)
-      .map(item => item.saltNameTh + ' (' + item.saltFormula + ')');
-    shuffle(otherSalts);
-    // Push 3 others:
-    for (let i = 0; i < 3 && i < otherSalts.length; i++) saltOptions.push(otherSalts[i]);
-    saltOptions = shuffle(saltOptions); // randomize option order
-    saltOptions.forEach(opt =>
-      questionHtml += `<button class="option-btn" onclick="chooseOption('${escapeHtml(opt)}')">${opt}</button>`
-    );
-    questionHtml += `</div>`;
-  }
-  // Who Made Me mode: show salt, choose acid & base
-  else if (state.mode === 'whomade') {
-    questionHtml += `
-      <div class="equation-box" style="margin-bottom:10px;">
-        <span>
-          ${nameAndFormula(q.saltNameTh, q.saltFormula)}
-        </span><br>
-        <span style="color:#2d3285;font-size:0.95em;">
-          ${q.equation}
-        </span>
-      </div>
-      <div><strong>เลือกคู่ กรด + เบส ที่ทำให้เกิดเกลือนี้</strong></div>
-      <div class="options-list" id="options-container">
-    `;
-    // Build 4 pairs: correct + 3 random pairs
-    let pairOptions = [q.acidNameTh + ' (' + q.acidFormula + ') + ' + q.baseNameTh + ' (' + q.baseFormula + ')'];
-    // Others, ensuring no duplicate:
-    let others = acidBasePairs.filter(ab => ab.id !== q.id);
-    shuffle(others);
-    for (let i = 0; i < 3 && i < others.length; i++) {
-      let o = others[i];
-      pairOptions.push(o.acidNameTh + ' (' + o.acidFormula + ') + ' + o.baseNameTh + ' (' + o.baseFormula + ')');
+      return `
+        <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 25px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+          <h3 style="font-size: 24px; color: ${rankColor}; margin-bottom: 15px;">
+            ${rankEmoji} ${rankMessage}
+          </h3>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;">
+            <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">จำนวนผู้เล่น</div>
+              <div style="font-size: 24px; font-weight: bold; color: #667eea;">${totalPlayers}</div>
+            </div>
+            
+            <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">คะแนนสูงสุด</div>
+              <div style="font-size: 24px; font-weight: bold; color: #28a745;">${topScore}</div>
+            </div>
+            
+            <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">คะแนนเฉลี่ย</div>
+              <div style="font-size: 24px; font-weight: bold; color: #ff9800;">${averageScore}</div>
+            </div>
+          </div>
+          
+          ${comparisonText}
+          
+          ${score === topScore ? '<p style="font-size: 18px; color: #28a745; font-weight: bold; margin-top: 15px;">🎊 คุณทำคะแนนสูงสุด!</p>' : ''}
+        </div>
+      `;
     }
-    pairOptions = shuffle(pairOptions);
-    pairOptions.forEach(opt =>
-      questionHtml += `<button class="option-btn" onclick="chooseOption('${escapeHtml(opt)}')">${opt}</button>`
-    );
-    questionHtml += `</div>`;
-  }
 
-  questionHtml += `
-      <button class="main-btn" onclick="goHome()" style="margin-top:16px;background:#fcddeb;color:#a03851;">กลับหน้าแรก</button>
-    </div>
-  `;
-  appDom.innerHTML = questionHtml;
-}
+    function renderLeaderboard() {
+      const list = document.getElementById('leaderboardList');
+      
+      const topScores = allScores.sort((a, b) => b.score - a.score).slice(0, 10);
+      
+      if (topScores.length === 0) {
+        list.innerHTML = '<li class="loading">ยังไม่มีคะแนน</li>';
+        return;
+      }
 
-// Helper to escape quotes in option values
-function escapeHtml(str) {
-  return str.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-}
+      list.innerHTML = topScores.map((record, index) => `
+        <li class="leaderboard-item">
+          <span class="leaderboard-rank">${index + 1}</span>
+          <span class="leaderboard-name">${record.player_name}</span>
+          <span class="leaderboard-score">${record.score} คะแนน (${record.mode})</span>
+        </li>
+      `).join('');
+    }
 
-// Option chosen handler
-window.chooseOption = function(selectedOpt) {
-  const q = state.questions[state.currentQIdx];
-  // What is correct answer:
-  let correctOpt;
-  if (state.mode === 'whoami') {
-    correctOpt = q.saltNameTh + ' (' + q.saltFormula + ')';
-  } else {
-    correctOpt = q.acidNameTh + ' (' + q.acidFormula + ') + ' +
-                 q.baseNameTh + ' (' + q.baseFormula + ')';
-  }
-  // Save answer for summary; ถูก/ผิด
-  state.answers.push({
-    question: state.mode === 'whoami'
-      ? `${nameAndFormula(q.acidNameTh, q.acidFormula)} + ${nameAndFormula(q.baseNameTh, q.baseFormula)}`
-      : `${nameAndFormula(q.saltNameTh, q.saltFormula)}`,
-    equation: q.equation,
-    playerAnswer: selectedOpt,
-    playerCorrect: selectedOpt === correctOpt,
-    correctAnswer: correctOpt
-  });
-  // Next question or summary
-  state.currentQIdx += 1;
-  if (state.currentQIdx < 10) {
-    renderQuestion();
-  } else {
-    renderSummary();
-  }
-};
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
 
-// ========== Score & Summary ==========
+    function showInlineMessage(message, type) {
+      const messageDiv = document.createElement('div');
+      let bgColor = '#d4edda';
+      let textColor = '#155724';
+      let borderColor = '#c3e6cb';
+      
+      if (type === 'error') {
+        bgColor = '#f8d7da';
+        textColor = '#721c24';
+        borderColor = '#f5c6cb';
+      } else if (type === 'info') {
+        bgColor = '#d1ecf1';
+        textColor = '#0c5460';
+        borderColor = '#bee5eb';
+      } else if (type === 'success') {
+        bgColor = '#d4edda';
+        textColor = '#155724';
+        borderColor = '#c3e6cb';
+      }
+      
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        background: ${bgColor};
+        color: ${textColor};
+        border: 2px solid ${borderColor};
+        border-radius: 10px;
+        font-weight: bold;
+        z-index: 1000;
+        animation: slideIn 0.5s ease;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      `;
+      messageDiv.textContent = message;
+      document.body.appendChild(messageDiv);
 
-function renderSummary() {
-  // Compute score:
-  const score = state.answers.filter(a => a.playerCorrect).length;
-  // Feedback
-  let feedback = '';
-  if (score <= 4) {
-    feedback = 'ลองทบทวนเนื้อหาอีกครั้งนะ 👍';
-  } else if (score <= 7) {
-    feedback = 'ทำได้ดีแล้ว ลองเล่นอีกรอบเพื่อให้แม่นยำขึ้น 💪';
-  } else {
-    feedback = 'ยอดเยี่ยม! เก่งมาก เข้าใจเรื่องเกลือจากกรด–เบสเป็นอย่างดี 🌟';
-  }
-  let summaryHtml = `
-    <h2>สรุปคะแนน</h2>
-    <div class="score">ได้ ${score} จาก 10 คะแนน</div>
-    <div class="feedback">${feedback}</div>
-    <table class="summary-list">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>คำถาม</th>
-          <th style="width:110px;">คำตอบของคุณ</th>
-          <th style="width:55px;">ผล</th>
-          <th>คำตอบที่ถูกต้อง</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-  // List each Q/A
-  state.answers.forEach((a, idx) => {
-    let check = a.playerCorrect
-      ? `<span class="correct">ถูก</span>`
-      : `<span class="incorrect">ผิด</span>`;
-    summaryHtml += `
-      <tr>
-        <td>${idx + 1}</td>
-        <td>${a.question}<br>
-          <span style="color:#6a33c2;font-size:0.95em;">${a.equation}</span>
-        </td>
-        <td>${a.playerAnswer}</td>
-        <td>${check}</td>
-        <td>${a.correctAnswer}</td>
-      </tr>
-    `;
-  });
-  summaryHtml += `
-      </tbody>
-    </table>
-    <button class="main-btn" onclick="startGame('${state.mode}')" style="margin-top:14px;">เล่นโหมดนี้อีกครั้ง</button>
-    <button class="main-btn" onclick="goHome()" style="background:#fcddeb;color:#a03851;">กลับหน้าแรก</button>
-  `;
-  appDom.innerHTML = summaryHtml;
-}
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 3000);
+    }
 
-// ========== Initial Load ==========
-
-renderStartScreen();
-
-</script>
-</body>
-</html># acidbasesalt
+    initSDKs();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a53ba09d2a0898c',t:'MTc2NDI2ODU0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
